@@ -4,6 +4,7 @@ use rand::Rng;
 const CONSONANTS: [char; 9] = ['r', 'l', 'k', 'θ', 'ç', 'n', 'ʔ', 't', 'h'];
 const VOWELS: [char; 4] = ['a', 'i', 'ɒ', 'ε'];
 
+/// Convenience wrapper around Structure::Seq to make it feel more like a Vec
 macro_rules! seq {
     ($($e:expr),*) => ({
         let mut v = vec![$($e),*];
@@ -11,6 +12,7 @@ macro_rules! seq {
     })
 }
 
+/// Convenience wrapper for Structure::Opt, even allows creating opt sequences
 macro_rules! opt {
     ($e:expr) => (Structure::Opt(Box::new($e)));
     ($e:expr, $($es:expr),+) => (opt!(seq![$e, $($es),+]));
@@ -43,11 +45,15 @@ impl Structure {
     }
 }
 
+/// Picks out a random char from a sequence
+/// Expected to only be used with the const arrays, hence not having a safe-guard
 fn random_char(input: &[char]) -> char {
     let mut rng = rand::thread_rng();
     *rng.choose(input).unwrap()
 }
 
+/// Prints out `count` number of words in a given Structure
+/// with `row_width` number of words before making a new-line
 fn print_words(structure: &Structure, count: u32, row_width: u32) {
     for i in 1 ..= count {
         let s = structure.to_string();
@@ -63,6 +69,6 @@ fn print_words(structure: &Structure, count: u32, row_width: u32) {
 
 fn main() {
     use Structure::*;
-    let v = seq![opt!(C), C, V, opt!(C), C, V, opt!(C)];
+    let v = seq![opt!(C), C, V, opt!(C), C, V, opt!(C)]; // generates (C)CV(C)CV(C) words
     print_words(&v, 200, 10);
 }
